@@ -65,14 +65,20 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
-        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, False)
+        #False to check if it is second alien
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, False) 
+
         if collisions:
+            #get list of damaged aliens
             for damaged_aliens in collisions.values():
+                #check every damaged alien
                 for alien in damaged_aliens:
+                    # Check if it is second alien
                     if isinstance(alien, SecondAlien):
+                        # minus one health, if return True, kill the alien
                         if alien.take_damage():
                             alien.kill()
-                    else:
+                    else: #is normal alien
                         alien.kill()
 
         if not self.aliens:
