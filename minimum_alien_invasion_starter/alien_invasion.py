@@ -4,6 +4,7 @@ from alien import Alien
 from bullet import Bullet
 from settings import Settings
 from ship import Ship
+from alien import Alien, SecondAlien
 
 
 class AlienInvasion:
@@ -63,7 +64,17 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
-        pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, False)
+        if collisions:
+            for damaged_aliens in collisions.values():
+                for alien in damaged_aliens:
+                    if isinstance(alien, SecondAlien):
+                        if alien.take_damage():
+                            alien.kill()
+                    else:
+                        alien.kill()
+
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
@@ -87,7 +98,11 @@ class AlienInvasion:
                 self._create_alien(alien_number, row_number, alien_width, alien_height)
 
     def _create_alien(self, alien_number, row_number, alien_width, alien_height):
-        alien = Alien(self)
+        if row_number == 0:
+            alien = SecondAlien(self)
+        else:
+            alien = Alien(self)
+
         alien.x = alien_width + 2 * alien_width * alien_number
         alien.rect.x = int(alien.x)
         alien.rect.y = alien_height + 2 * alien_height * row_number

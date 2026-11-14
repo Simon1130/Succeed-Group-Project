@@ -23,3 +23,8 @@ class Settings:
         self.alien_color = (40, 150, 70)
         self.fleet_drop_speed = 12
         self.fleet_direction = 1
+        self.alien_health = 1
+
+        self.second_alien_color = (200, 50, 50)
+        self.second_alien_damaged_color = (40, 150, 70)
+        self.second_alien_health = 2
