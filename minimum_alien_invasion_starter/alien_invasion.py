@@ -102,11 +102,7 @@ class AlienInvasion:
         self._check_fleet_edges()
         self.aliens.update()
         if any(alien.rect.bottom >= self.screen.get_rect().bottom for alien in self.aliens.sprites()):
-            self.aliens.empty()
-            self.bullets.empty()
-            self.ship.centre_ship()
-            self.settings.initialize_dynamic_settings()
-            self._create_fleet()
+            self.game_state = GameState.GAME_OVER
 
     def _create_fleet(self):
         alien = Alien(self)
@@ -148,6 +144,8 @@ class AlienInvasion:
         self.score.draw_score()
         if self.game_state == GameState.START:
             self._draw_start_screen()
+        elif self.game_state == GameState.GAME_OVER:
+            self._draw_game_over_screen()
         pygame.display.flip()
         
         
@@ -162,6 +160,20 @@ class AlienInvasion:
         self.screen.blit(title, title.get_rect(center=(centre_x, 280)))
         self.screen.blit(prompt, prompt.get_rect(center=(centre_x, 360)))        
 
+
+
+    def _draw_game_over_screen(self):
+        veil = pygame.Surface(self.screen.get_size())
+        veil.set_alpha(190)
+        veil.fill(self.settings.bg_color)
+        self.screen.blit(veil, (0, 0))
+        title = self.title_font.render("GAME OVER", True, (40, 40, 40))
+        prompt = self.text_font.render("Press R or ENTER to restart", True, (40, 40, 40))
+        centre_x = self.settings.screen_width // 2
+        self.screen.blit(title, title.get_rect(center=(centre_x, 280)))
+        self.screen.blit(prompt, prompt.get_rect(center=(centre_x, 360))) 
+        
+        
     @staticmethod
     def _quit_game():
         pygame.quit()
