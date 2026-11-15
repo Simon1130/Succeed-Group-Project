@@ -88,6 +88,7 @@ class AlienInvasion:
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _update_aliens(self):
         self._check_fleet_edges()
@@ -96,6 +97,7 @@ class AlienInvasion:
             self.aliens.empty()
             self.bullets.empty()
             self.ship.centre_ship()
+            self.settings.initialize_dynamic_settings()
             self._create_fleet()
 
     def _create_fleet(self):
