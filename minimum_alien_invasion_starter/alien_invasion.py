@@ -56,6 +56,8 @@ class AlienInvasion:
                 self._fire_bullet()
         elif event.key == pygame.K_RETURN and self.game_state == GameState.START:
             self.game_state = GameState.PLAYING
+        elif event.key in (pygame.K_r, pygame.K_RETURN) and self.game_state == GameState.GAME_OVER:
+            self._start_new_game()
         elif event.key == pygame.K_q:
             self._quit_game()
 
@@ -68,6 +70,20 @@ class AlienInvasion:
     def _fire_bullet(self):
         if len(self.bullets) < self.settings.bullets_allowed:
             self.bullets.add(Bullet(self))
+            
+            
+            
+    def _start_new_game(self):
+        self.settings.initialize_dynamic_settings()
+        self.aliens.empty()
+        self.bullets.empty()
+        self.ship.moving_right = False
+        self.ship.moving_left = False
+        self.ship.centre_ship()
+        self._create_fleet()
+        self.score = Score(self)
+        self.game_state = GameState.PLAYING 
+        
 
     def _update_bullets(self):
         self.bullets.update()
