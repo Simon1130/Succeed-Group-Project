@@ -4,6 +4,7 @@ from alien import Alien
 from bullet import Bullet
 from settings import Settings
 from ship import Ship
+from game_state import GameState 
 from alien import Alien, SecondAlien
 from score import Score
 
@@ -22,13 +23,17 @@ class AlienInvasion:
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
         self.score = Score(self)
+        self.game_state = GameState.START
+        self.title_font = pygame.font.SysFont(None, 80)
+        self.text_font = pygame.font.SysFont(None, 36)
 
     def run_game(self):
         while True:
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
+            if self.game_state == GameState.PLAYING:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
             self._update_screen()
             self.clock.tick(60)
 
@@ -47,7 +52,10 @@ class AlienInvasion:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = True
         elif event.key == pygame.K_SPACE:
-            self._fire_bullet()
+            if self.game_state == GameState.PLAYING:
+                self._fire_bullet()
+        elif event.key == pygame.K_RETURN and self.game_state == GameState.START:
+            self.game_state = GameState.PLAYING
         elif event.key == pygame.K_q:
             self._quit_game()
 
@@ -138,7 +146,21 @@ class AlienInvasion:
         self.ship.blitme()
         self.aliens.draw(self.screen)
         self.score.draw_score()
+        if self.game_state == GameState.START:
+            self._draw_start_screen()
         pygame.display.flip()
+        
+        
+    def _draw_start_screen(self):
+        veil = pygame.Surface(self.screen.get_size())
+        veil.set_alpha(190)
+        veil.fill(self.settings.bg_color)
+        self.screen.blit(veil, (0, 0))
+        title = self.title_font.render("ALIEN INVASION", True, (40, 40, 40))
+        prompt = self.text_font.render("Press ENTER to start", True, (40, 40, 40))
+        centre_x = self.settings.screen_width // 2
+        self.screen.blit(title, title.get_rect(center=(centre_x, 280)))
+        self.screen.blit(prompt, prompt.get_rect(center=(centre_x, 360)))        
 
     @staticmethod
     def _quit_game():
