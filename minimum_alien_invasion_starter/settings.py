@@ -9,6 +9,7 @@ class Settings:
         self.ship_color = (30, 90, 180)
         self.ship_width = 60
         self.ship_height = 35
+        self.ship_limit = 3
 
         self.bullet_width = 4
         self.bullet_height = 16

@@ -7,6 +7,8 @@ from ship import Ship
 from game_state import GameState 
 from alien import Alien, SecondAlien
 from score import Score
+from lives import Lives
+
 
 
 class AlienInvasion:
@@ -23,6 +25,7 @@ class AlienInvasion:
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
         self.score = Score(self)
+        self.lives = Lives(self)
         self.game_state = GameState.START
         self.title_font = pygame.font.SysFont(None, 80)
         self.text_font = pygame.font.SysFont(None, 36)
@@ -83,6 +86,7 @@ class AlienInvasion:
         self._create_fleet()
         self.score = Score(self)
         self.game_state = GameState.PLAYING 
+        self.lives.reset_lives()
         
 
     def _update_bullets(self):
@@ -117,8 +121,19 @@ class AlienInvasion:
     def _update_aliens(self):
         self._check_fleet_edges()
         self.aliens.update()
-        if any(alien.rect.bottom >= self.screen.get_rect().bottom for alien in self.aliens.sprites()):
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+        elif any(alien.rect.bottom >= self.screen.get_rect().bottom for alien in self.aliens.sprites()):
+            self._ship_hit()
+
+    def _ship_hit(self):
+        if self.lives.lose_life():
             self.game_state = GameState.GAME_OVER
+        else:
+            self.aliens.empty()
+            self.bullets.empty()
+            self.ship.centre_ship()
+            self._create_fleet()
 
     def _create_fleet(self):
         alien = Alien(self)
@@ -158,6 +173,7 @@ class AlienInvasion:
         self.ship.blitme()
         self.aliens.draw(self.screen)
         self.score.draw_score()
+        self.lives.draw_lives()
         if self.game_state == GameState.START:
             self._draw_start_screen()
         elif self.game_state == GameState.GAME_OVER:
